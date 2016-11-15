@@ -322,6 +322,11 @@
 				default: 'label'
 			},
 
+			sendParameter: {
+				type: String,
+				default: null
+			},
+
 			/**
 			 * Callback to generate the label text. If {option}
 			 * is an object, returns option[this.label] by default.
@@ -334,6 +339,13 @@
 					if (typeof option === 'object') {
 						if (this.label && option[this.label]) {
 							return option[this.label]
+						}
+					}
+					if(this.sendParameter) {
+						for(var key in this.filteredOptions) {
+							if(this.filteredOptions[key][this.sendParameter] == option) {
+								return this.filteredOptions[key][this.label];
+							}
 						}
 					}
 					return option;
@@ -389,7 +401,7 @@
 			resetOnOptionsChange: {
 				type: Boolean,
 				default: false
-			},
+			}
 		},
 
 		data() {
@@ -430,6 +442,9 @@
 				} else {
 					if (this.taggable && !this.optionExists(option)) {
 						option = this.createOption(option)
+                        if(this.sendParameter) {
+							option = option[this.sendParameter]
+						}
 
 						if (this.pushTags) {
 							this.options.push(option)
@@ -456,6 +471,9 @@
 			 * @return {void}
 			 */
 			deselect(option) {
+				if(this.sendParameter) {
+					option = option[this.sendParameter]
+				}
 				if (this.multiple) {
 					let ref = -1
 					this.value.forEach((val) => {
@@ -507,6 +525,9 @@
 			 * @return {Boolean}         True when selected || False otherwise
 			 */
 			isOptionSelected(option) {
+				if(this.sendParameter) {
+					option = option[this.sendParameter]
+				}
 				if (this.multiple && this.value) {
 					let selected = false
 					this.value.forEach(opt => {
